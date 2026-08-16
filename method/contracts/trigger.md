@@ -55,8 +55,8 @@ This example shows a builder and requester talking: they know the volume, the re
 
 ## Load-bearing fields for testing
 
-**volume_peak** generates the Peak test case in task 6. If left vague or unspecified, the automation cannot be load-tested.
+**volume_peak** generates the Peak test case in `method/testing.md`. If left vague or unspecified, the automation cannot be load-tested.
 
-**replay_behaviour** generates the Replay test case in task 6. If left unanswered, contract 3 cannot be written and the automation has no defence against duplicate effects (e.g. duplicate emails or double charges).
+**replay_behaviour** generates the Replay test case in `method/testing.md`. If left unanswered, contract 3 cannot be written and the automation has no defence against duplicate effects (e.g. duplicate emails or double charges).
 
 Fill these fields with precision. Thin answers here cost test coverage later.
