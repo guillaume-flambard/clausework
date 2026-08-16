@@ -88,14 +88,20 @@ fail=0
 ok()   { printf 'ok   %s\n' "$1"; }
 bad()  { printf 'FAIL %s\n' "$1"; fail=1; }
 
-# 1. No em dash or en dash anywhere in shipped markdown.
-# scripts/ and docs/superpowers/plans/ are exempt: they must quote the forbidden
-# characters in order to forbid them. Everything a reader of the method sees is scanned.
+# 1. No em dash or en dash in shipped markdown.
+# Files are enumerated through git, never by walking the filesystem: git-ignored
+# scratch quotes these characters by necessity and must never be scanned.
+# --cached --others --exclude-standard covers tracked files AND new untracked
+# files while honouring .gitignore, which is exactly the set that can ship.
+# scripts/ and docs/superpowers/plans/ are exempt by path prefix: they must quote
+# the forbidden characters in order to forbid them.
 dash_scan() {
-  grep -rIn -e $'—' -e $'–' -e '&mdash;' -e '&ndash;' \
-    --include='*.md' --include='*.json' \
-    --exclude-dir=.git --exclude-dir=scripts --exclude-dir=plans \
-    . 2>/dev/null
+  local files
+  files=$(git ls-files --cached --others --exclude-standard -- '*.md' '*.json' \
+    | grep -v -e '^scripts/' -e '^docs/superpowers/plans/')
+  [ -z "$files" ] && return 0
+  printf '%s\n' "$files" | tr '\n' '\0' \
+    | xargs -0 grep -HIn -e $'—' -e $'–' -e '&mdash;' -e '&ndash;' 2>/dev/null
 }
 if [ -n "$(dash_scan)" ]; then
   bad "dash: em or en dash found"
@@ -114,11 +120,12 @@ done
 
 # 2b. The six mandatory test cases are documented.
 if [ -f method/testing.md ]; then
+  missing_cases=0
   for c in nominal replay peak "broken data" "zero items" cap; do
     grep -qi "^| $c " method/testing.md \
-      || bad "testing: case '$c' missing from method/testing.md"
+      || { bad "testing: case '$c' missing from method/testing.md"; missing_cases=1; }
   done
-  ok "testing: six mandatory cases documented"
+  [ "$missing_cases" -eq 0 ] && ok "testing: six mandatory cases documented"
 else
   bad "testing: method/testing.md missing"
 fi
