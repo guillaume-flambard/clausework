@@ -57,7 +57,7 @@ Four items were open in spec section 12. Three are now answered and their answer
 | `intake/locales/fr.md` | French labels. |
 | `intake/README.md` | How to install it on your own instance. |
 | `registry/README.md` | What a registry entry is, and the anchor convention. |
-| `registry/echo-ferry-booking-confirmation/` | The real traversed case. |
+| `registry/job-market-multi-source-scan/` | The real traversed case. |
 | `examples/crm-lead-enrichment/` | The illustrative sketched case. |
 | `docs/decisions.md` | The repository log, including every rule cap exception. |
 
@@ -359,7 +359,7 @@ git commit -m "feat: contract 3, idempotency and effects, the only release block
 
 **Interfaces:**
 - Consumes: `scripts/check.sh`.
-- Produces: rule identifiers `M1` to `M5`. Field names: `measure`, `before_value`, `before_source`, `before_date`, `before_estimated` (boolean), `target_value`, `read_back_method`, `read_back_date`, `read_back_owner`, `abandon_condition`. Task 7 fills these with real Echo Travel figures.
+- Produces: rule identifiers `M1` to `M5`. Field names: `measure`, `before_value`, `before_source`, `before_date`, `before_estimated` (boolean), `target_value`, `read_back_method`, `read_back_date`, `read_back_owner`, `abandon_condition`. Task 7 fills these with figures measured from a live pipeline.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -488,25 +488,29 @@ git commit -m "feat: gates file, overview and templates, structural check now gr
 
 ---
 
-### Task 7: The real traversed case, Echo Travel
+### Task 7: The real traversed case, a multi source scanning pipeline
 
 **Files:**
 - Create: `registry/README.md`
-- Create: `registry/echo-ferry-booking-confirmation/README.md`
-- Create: `registry/echo-ferry-booking-confirmation/{request,trigger,idempotency,impact,flow-spec,runbook}.md`
+- Create: `registry/job-market-multi-source-scan/README.md`
+- Create: `registry/job-market-multi-source-scan/{request,trigger,idempotency,impact,flow-spec,runbook}.md`
 - Test: `bash scripts/check.sh`
 
 **Interfaces:**
 - Consumes: every contract and template from tasks 2 to 6.
 - Produces: the reference entry that `examples/` and the README point at, and the shape every future entry copies.
 
-**Why this case:** irreversible effects reaching real customers (booking confirmations), genuine replay risk, seasonal peak volume, a Zapier to n8n migration with a quantifiable gain, 150 passengers a day in November 2025. Every contract fills with real figures instead of invented ones. Spec section 11.
+**Why this case:** it is real, it runs daily, and **it failed in exactly the way contract 3 exists to prevent.** A pipeline scans 45 distinct sources into one store, deduplicated by nothing. Measured 2026-08-16: 3004 rows for 2022 distinct organisations, so 982 duplicate rows, a third of the table. 432 organisations appear more than once, one from seven separate sources. Eighty rows sit in a `new` state while the same organisation already carries a row that was acted on.
+
+A success story would have made every refusal rule abstract. This one lets each rule point at what its own absence cost, with a number attached. Spec section 11.
+
+**Privacy, binding on every file in this entry:** publish mechanics, never identities. Volumetrics, duplicate rates and failure counts are real and go in. Organisation names, item statuses, dates and any personal identifier do not, and no row level data is committed. The teaching value is in the failure mode, not in which organisations appeared. A single leaked organisation name is a defect, not a detail.
 
 - [ ] **Step 1: Write the failing test**
 
 The test exists: `scripts/check.sh` check 4 demands seven files per registry entry plus a `workflow_id:` header field.
 
-Run: `mkdir -p registry/echo-ferry-booking-confirmation && bash scripts/check.sh 2>&1 | grep registry`
+Run: `mkdir -p registry/job-market-multi-source-scan && bash scripts/check.sh 2>&1 | grep registry`
 Expected: seven FAIL lines, one per missing file, plus the anchor FAIL.
 
 - [ ] **Step 2: Write the registry README**
@@ -517,11 +521,21 @@ It also carries the two rules that keep an entry from going stale, from spec sec
 - Every entry header carries a review date. Volumes double and effect inventories do not follow on their own.
 - **Adding a side effecting node reopens contract 3.** Not a suggestion either: the effect inventory is what the release gate and two of the six test cases read from, so an inventory that lags is a gate that has stopped working.
 
-- [ ] **Step 3: Fill the four contracts with real Echo Travel data**
+- [ ] **Step 3: Fill the four contracts with the measured figures**
 
-Ask Guillaume for the real figures rather than inventing them. The case is only worth including because it is true. Specifically needed: the booking confirmation trigger and its system of record, normal and peak daily volume with the seasonal cause, the deduplication key actually used, the list of irreversible effects (at minimum the confirmation email to the passenger), and the Zapier to n8n before and after cost or time figures for the impact contract.
+These figures were measured on 2026-08-16 against the live store. Use them verbatim. Do not invent, round or embellish any of them, and do not go looking for more in the source system: everything publishable is already here.
 
-If a figure is genuinely unavailable, set it explicitly as `before_estimated: true` per rule M2 rather than inventing a number. That is what the flag exists for, and using it here demonstrates the rule.
+- 45 distinct sources feeding one pipeline
+- 3004 rows, 2022 distinct organisations, so 982 duplicate rows, 33 percent of the table
+- 432 organisations appear more than once
+- one organisation resurfaced from 7 distinct sources, another from 6, one appeared 36 times
+- 80 rows in a `new` state while the same organisation already carries a row that was acted on
+
+The contract 3 story is that the deduplication key is absent: nothing reconciles the same organisation across sources, so the same one arrives repeatedly as if it had never been seen. The 80 count is that failure, quantified.
+
+The contract 4 before value is measurable rather than estimated, so `before_estimated` is `false` here. Say so, and note in the entry that this is the uncommon case: rule M2 exists because most before values are estimates.
+
+If a field genuinely has no measured answer, set `before_estimated: true` per rule M2 rather than inventing a number. That is what the flag exists for.
 
 - [ ] **Step 4: Write the flow spec, the runbook and the entry README, then run the check**
 
@@ -534,7 +548,7 @@ Expected: all `ok`, `exit=0`.
 
 ```bash
 git add registry
-git commit -m "docs: Echo Travel ferry booking confirmation traversed end to end"
+git commit -m "docs: multi source scanning pipeline traversed end to end"
 ```
 
 ---
@@ -608,15 +622,15 @@ git commit -m "feat: intake form applying R1 to R5 live, writing into the regist
 
 - [ ] **Step 1: Write the illustrative case**
 
-`examples/crm-lead-enrichment/` traverses a lead enrichment between two CRMs. It exists so a Sales and Customer Success audience sees the method in their own language rather than in ferry bookings.
+`examples/crm-lead-enrichment/` traverses a lead enrichment between two CRMs. It exists so a Sales and Customer Success audience sees the method in their own language rather than in a scanning pipeline.
 
-It must be marked as illustrative in the first line of its README, in those words. An invented case presented as real would undo exactly the credibility the Echo Travel entry buys.
+It must be marked as illustrative in the first line of its README, in those words. An invented case presented as real would undo exactly the credibility the registry entry buys.
 
 Note that `scripts/check.sh` check 4 only walks `registry/`, so this directory is not structurally enforced. Mirror the seven file shape by hand.
 
 - [ ] **Step 2: Finish the README and run the check**
 
-`README.md` gains a two minute path: read `method/overview.md`, look at `registry/echo-ferry-booking-confirmation/` for a real one, copy `method/templates/`. Point at `intake/` as optional.
+`README.md` gains a two minute path: read `method/overview.md`, look at `registry/job-market-multi-source-scan/` for a real one, copy `method/templates/`. Point at `intake/` as optional.
 
 Run: `bash scripts/check.sh; echo "exit=$?"`
 Expected: all `ok`, `exit=0`.

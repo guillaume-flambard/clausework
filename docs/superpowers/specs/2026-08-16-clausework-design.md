@@ -382,12 +382,27 @@ README and AGENTS.md, the four contracts with templates and refusal rules, the b
 rules file, the flow spec and runbook templates, the intake form as an n8n workflow
 applying R1 through R5, and **one real case traversed end to end** in the registry.
 
-The traversed case must be one Guillaume actually lived. **Echo Travel** is the strongest
-candidate: irreversible effects reaching real customers (booking confirmations), replay
-risk, seasonal peak volume, a Zapier to n8n migration with a quantifiable gain, and 150
-passengers a day. Every contract fills in with real figures rather than invented examples. A
-second sketched case, lead enrichment between CRMs, marked explicitly as illustrative, gives
-a Sales and CS audience something in their own language.
+The traversed case must be one the author actually lived, and it is stronger still if it
+failed. The chosen case is a **multi source job market scanning pipeline** the author runs
+daily: 45 distinct sources feeding one store, deduplicated by nothing.
+
+Measured on 2026-08-16: 3004 rows for 2022 distinct organisations, so 982 duplicate rows, a
+third of the table. 432 organisations appear more than once, one of them from seven separate
+sources. Eighty rows sit in a `new` state while the same organisation already carries a row
+that was acted on. That is the deduplication key contract 3 exists to demand, absent, and
+counted.
+
+This earns its place over a success story. Every refusal rule can point at what its own
+absence cost here, with a number attached. Contract 3 gets a real effect inventory, and
+contract 4 gets a measured before value rather than an estimate.
+
+**The entry publishes mechanics, not identities.** Volumetrics, duplicate rates and failure
+counts are real and go in. Organisation names, item statuses, dates and any personal
+identifier do not, and no row level data is committed. The teaching value lives in the
+failure mode, never in which organisations appeared.
+
+A second sketched case, lead enrichment between CRMs, marked explicitly as illustrative,
+gives a Sales and CS audience something in their own language.
 
 ### Layer 2: tooling
 
