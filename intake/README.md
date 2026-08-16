@@ -2,6 +2,8 @@
 
 This is the intake form for the Clausework method, implementing R1 to R5 validation rules live. The form validates user input at each step and routes back to the faulty step with the precise question when validation fails.
 
+**Note:** This workflow is portable and must be imported into your own n8n instance. See Configuration below for setup instructions.
+
 ## Overview
 
 The intake form collects five contract 1 fields:
@@ -44,8 +46,8 @@ If no credential is available, you can configure it manually:
 ### 3. Configure the GitHub Repository
 
 Update the GitHub node parameters to point to your registry repository:
-1. Set the Repository Owner (e.g., your GitHub username)
-2. Set the Repository Name (e.g., `clausework-registry`)
+1. Set the Repository Owner to your GitHub username (look for the placeholder `GITHUB_OWNER` in the GitHub node)
+2. Set the Repository Name to your target repository (look for the placeholder `REGISTRY_REPOSITORY` in the GitHub node)
 
 The workflow will automatically create a file at `registry/{owner-slug}/request.md` when a form is submitted.
 
@@ -81,17 +83,16 @@ Always use the Production URL for live automation requests.
    - Raw response is stored to the Data Table
    - request.md file is created in the GitHub repository
    - Completion message is displayed
-   - Notification (optional) is sent to the builder
 
 ## Validation Rules
 
-The five rules are applied live during form submission:
+The five rules are applied live during form submission. Each rule catches the obvious refusals and passes fields to the scoping conversation:
 
-- **R1**: Owner field cannot be empty. Must be a named person.
-- **R2**: Trigger field cannot be empty. Must express the automation as "when X, then do Y."
-- **R3**: Volume field cannot be empty. Must include numbers and time estimates.
-- **R4**: Success field cannot be empty. Must describe observable, measurable outcomes.
-- **R5**: Never field cannot be empty. Must describe the worst case scenario.
+- **R1 (Owner)**: Refuses if empty OR contains a team word (team, equipe, service, department, group, squad, everyone, all of us, etc.). The form cannot judge whether a named person has genuine authority; that judgment happens in the scoping conversation.
+- **R2 (Trigger)**: Refuses if empty OR missing both "when" and "then". The form cannot verify whether the trigger is correctly shaped for automation; that belongs to the scoping conversation.
+- **R3 (Volume)**: Refuses if empty OR contains no digit. The form cannot estimate the real impact; only the requester and builder can do that together.
+- **R4 (Success)**: Refuses if empty OR contains neither digit nor percent sign. A criterion you cannot measure is not observable. The form catches unmeasurable claims like "save time"; detailed success criteria belong to the scoping conversation.
+- **R5 (Never)**: Refuses if empty OR is a catch-all phrase like "nothing" or "n/a". Every automation touching customer data has a worst case; the form catches empty or dismissive answers. Detailed worst-case planning belongs to the scoping conversation.
 
 When a rule fails, the form returns to that step and displays the precise question from method/gates.md.
 
@@ -130,8 +131,11 @@ Do not modify the validation logic (IF nodes) without understanding the impact o
 
 ## Technical Details
 
-- Workflow ID: G2S0l6ji6KIrCN1J (on production instance at https://n8n.memolabs.dev)
-- Nodes: 15 (1 trigger, 5 form pages, 5 validators, 1 aggregator, 1 storage, 1 GitHub, 1 completion)
+- Nodes: 13 (1 trigger, 5 form pages, 5 validators, 1 aggregator, 1 storage, 1 GitHub, 1 completion)
 - Credentials Required: GitHub API (for file creation)
 - Data Table Required: clausework_intake_raw
-- Status: Unpublished (deploy before going live)
+- Status: Import as unpublished, then activate after configuration
+
+## Adding Notification
+
+If you need the workflow to notify someone when a request is received, add your notification node (Slack, email, webhook, etc.) after the "Create Request File in GitHub" node and before the "Completion" form page. The workflow does not include notification by default so you can choose your notification channel and recipient.
