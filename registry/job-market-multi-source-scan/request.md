@@ -1,6 +1,6 @@
 # Contract 1: the request
 
-owner: Operations team lead
+owner: Guillaume Flambard, Operations Lead
 
 trigger_sentence: When the daily scheduled scan completes, then ingest all newly discovered job opportunities and store them in the opportunity database.
 

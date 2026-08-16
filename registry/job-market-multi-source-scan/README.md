@@ -1,7 +1,7 @@
 # Job market multi-source scan
 
 status: reviewed
-owner: Operations team
+owner: Guillaume Flambard, Operations Lead
 workflow_id: pending
 review_date: 2026-09-16
 created: 2026-08-16
@@ -10,9 +10,9 @@ created: 2026-08-16
 
 This entry documents a real multi-source scanning pipeline that failed in exactly the way contract 3 exists to prevent. It is the teaching case that demonstrates what the absence of an idempotency contract costs.
 
-The automation is not an n8n workflow. It is a scheduled SQLite-backed Python scanner that runs daily and pulls from 45 distinct sources into a single job opportunity store. It serves as the reference example to show that Clausework's four contracts and gates are engine-agnostic: the harness and intake form are n8n-specific, but the contracts themselves apply to any automation, regardless of where it runs.
+The automation is part of a hybrid pipeline: the scanning half is not n8n-based and consists of a scheduled SQLite-backed Python scanner that runs daily and pulls from 45 distinct sources into a single job opportunity store. The second half of the pipeline, a mailbox watcher that classifies incoming replies and logs them to a data table, runs on n8n. Both halves operate under the same four contracts defined below. This hybrid setup serves as the reference example showing that Clausework's four contracts and gates are engine-agnostic: the harness and intake form are n8n-specific, but the contracts themselves apply to any automation, regardless of where it runs.
 
-No n8n workflow has been built. `workflow_id: pending` indicates the contracts exist and are complete, but the automation runs elsewhere. The decision to include it in the registry anyway reflects an intention to eventually migrate the scanner onto n8n and wire it into the same release and operational gates as all other automations, OR to decommission it after measured evidence is complete.
+The scanner component has not yet been migrated to n8n. `workflow_id: pending` indicates the contracts exist and are complete, but this component runs elsewhere. The decision to include it in the registry anyway reflects an intention to eventually migrate the scanner onto n8n and wire it into the same release and operational gates as all other automations, OR to decommission it after measured evidence is complete.
 
 ## Why this case is here
 
