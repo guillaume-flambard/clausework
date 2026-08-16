@@ -241,10 +241,22 @@ A rule that follows from the contracts rather than from opinion: **automatic rep
 forbidden on any flow carrying an irreversible effect**. Contract 3 already listed those
 effects, so there is nothing to debate during the incident.
 
-**Silent failure.** A flow processing zero items is not a success, it is a signal. The
-runbook declares the expected volume, and a volume under the threshold raises an alert. See
-the Vault note `[[n8n Zero-Item Silent Failure]]`, to be read before implementation so the
-threshold matches what was actually observed.
+**Silent failure.** A flow processing zero items is not a success, it is a signal. Corrected
+on 2026-08-16 against `~/Vault/03-Technologies/n8n Zero-Item Silent Failure.md`, observed on
+self-hosted n8n 2.29.10 on 2026-07-16, which contradicts the first draft of this section on
+two points.
+
+An **error workflow never fires on it**, because zero items is not an error: the downstream
+chain is skipped and the execution is written as `success`. Alerting cannot be the answer.
+And the observable signal is not the item count, it is **execution duration collapsing by
+orders of magnitude**: on the documented case, 4m30s working against 63ms broken, both
+green, for five days.
+
+So the runbook declares an expected item count **and an expected duration floor**, and the
+method requires an explicit guard node that throws after any node which can legitimately
+emit nothing (file reads, filters, IF branches, HTTP calls with empty result sets, database
+queries with no rows). Turning silence into a real error is what makes the alerting chain
+work at all.
 
 **The contract 3 cap is a circuit breaker, not an alert.** Past the cap, it cuts. An alert
 at 3am wakes nobody, a circuit breaker saves 4000 emails.
@@ -391,14 +403,27 @@ decommissioning.
 **Deliberately not built.** It needs a real portfolio and real users, otherwise it is
 designed blind. Stating that is stronger than shipping a speculative and shaky layer 3.
 
-## 12. To verify before implementation
+## 12. Open items
 
-- Read `[[n8n Zero-Item Silent Failure]]` in the Vault and set the alert threshold from what
-  was actually observed, rather than from a guess.
-- Read the n8n documentation on Source Control and Environments to confirm the source of
-  truth decision holds on the version in use. Not read during design.
-- Confirm which n8n form node the intake workflow should use, and whether live per field
-  validation is possible in it, since R1 through R5 must be applied inside the form rather
-  than after submission.
-- Confirm how the intake workflow writes into the git registry (GitHub API commit, or an
-  intermediate store the builder pulls from).
+Resolved on 2026-08-16, before the implementation plan was written.
+
+**Silent failure. Resolved, and it corrected section 8.** Source:
+`~/Vault/03-Technologies/n8n Zero-Item Silent Failure.md`, n8n 2.29.10, 2026-07-16. An error
+workflow never fires on a zero item skip, and the real signal is duration rather than item
+count. Section 8 now reflects that.
+
+**The form node and live validation. Resolved: possible.** `n8n-nodes-base.formTrigger` v2.6
+starts the form, `n8n-nodes-base.form` v2.5 with `operation: page` adds each step, and
+official best practice routes back to the faulty step with an error message using IF or
+Switch. Two obligations follow: set "Append n8n Attribution" to false, and persist the raw
+response in a real storage node (Data Table preferred), because Set and Merge do not
+persist.
+
+**Writing into the registry. Resolved.** `n8n-nodes-base.github` with
+`resource: file, operation: create` writes the file directly.
+
+Still open.
+
+**n8n Source Control and Environments documentation: not read.** It does not block layer 1,
+which does not use git as the source of truth for workflow JSON. It must be read before
+layer 3 is designed for real, and until then no behaviour should be assumed from it.
