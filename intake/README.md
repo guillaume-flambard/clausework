@@ -92,7 +92,7 @@ Run `node intake/test-gates.mjs` from the repository root to verify that the fiv
 
 The five rules are applied live during form submission. Each rule catches the obvious refusals and passes fields to the scoping conversation:
 
-- **R1 (Owner)**: Refuses if empty OR contains a team word (team, equipe, service, department, group, squad, everyone, all of us, etc.). The form cannot judge whether a named person has genuine authority; that judgment happens in the scoping conversation.
+- **R1 (Owner)**: Refuses if empty OR contains a team word (team, equipe, service, department, group, squad, everyone, all of us, etc.) without a comma separator. A comma indicates the answer is structured as "Name, Title" (e.g., "Tom Wilson, Department Manager"), which passes even if the title contains a team word. The form cannot judge whether a named person has genuine authority; that judgment happens in the scoping conversation.
 - **R2 (Trigger)**: Refuses if empty OR missing both "when" and "then". The form cannot verify whether the trigger is correctly shaped for automation; that belongs to the scoping conversation.
 - **R3 (Volume)**: Refuses if empty OR contains no digit. The form cannot estimate the real impact; only the requester and builder can do that together.
 - **R4 (Success)**: Refuses if empty OR contains neither digit nor percent sign. A criterion you cannot measure is not observable. The form catches unmeasurable claims like "save time"; detailed success criteria belong to the scoping conversation.

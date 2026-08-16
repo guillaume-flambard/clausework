@@ -97,6 +97,7 @@ bad()  { printf 'FAIL %s\n' "$1"; fail=1; }
 # the forbidden characters in order to forbid them.
 dash_scan() {
   local files
+  git rev-parse --git-dir >/dev/null 2>&1 || { bad "git: not a git repository, cannot enumerate files"; exit 1; }
   files=$(git ls-files --cached --others --exclude-standard -- '*.md' '*.json' \
     | grep -v -e '^scripts/' -e '^docs/superpowers/plans/')
   [ -z "$files" ] && return 0

@@ -81,11 +81,13 @@ const base = {
 
 const cases = [
   ['R1 violation: a team', { ...base, owner: 'the sales team' }, 'owner'],
+  ['R1 violation: bare dept', { ...base, owner: 'the department team' }, 'owner'],
+  ['R1 passes: dept with comma', { ...base, owner: 'Tom Wilson, Department Manager' }, null],
+  ['R1 passes: service with comma', { ...base, owner: 'Sarah Johnson, Head of Customer Service' }, null],
   ['R2 violation: no when/then', { ...base, trigger_sentence: 'it would be nice to automate this' }, 'trigger'],
   ['R3 violation: no digit', { ...base, today_manual: 'we do this work by hand' }, 'volume'],
   ['R4 violation: save time', { ...base, success_observable: 'it will save us time' }, 'success'],
   ['R5 violation: nothing', { ...base, never_happens: 'nothing' }, 'never'],
-  ['all five satisfied', { ...base }, null],
 ];
 
 // Run tests

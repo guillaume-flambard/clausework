@@ -276,7 +276,7 @@
               }
             },
             {
-              "leftValue": "={{ (/team|equipe|\u00e9quipe|service|department|dept|group|squad|everyone|all of us/i).test($json.owner || '') }}",
+              "leftValue": "={{ (function() { const owner = $json.owner || ''; const hasTeamWord = /team|equipe|équipe|service|department|dept|group|squad|everyone|all of us/i.test(owner); if (!hasTeamWord) return false; return !owner.includes(','); })() }}",
               "operator": {
                 "type": "boolean",
                 "operation": "equals"

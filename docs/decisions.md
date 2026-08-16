@@ -12,7 +12,7 @@
 
 ## 2026-08-16: Layer 1 completion and deferred findings
 
-**Task 9 deferred findings resolved:**
+**Deferred findings from the layer 1 build, resolved:**
 
 1. **Runbook escalation path points to contract 1 owner.** The escalation section in `method/templates/runbook.md` asks for an on-call owner, but no contract has a dedicated field for it. Resolution: Point the escalation at the `owner` field already collected by contract 1 (the request), and document that a different name can be written into the runbook if the on-call differs from the business owner.
 
