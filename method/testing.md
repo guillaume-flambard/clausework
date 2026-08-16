@@ -19,7 +19,7 @@ Each case is executed against pinned test data. The flow spec carries the expect
 
 **Never test a customer effecting flow against production without switching its irreversible effects off.**
 
-This is the only rule in the method with no relief valve.
+This is the only rule in the method with no relief valve. See `method/gates.md` for the canonical statement of this rule and its justification.
 
 Irreversible effects must be switchable. The contract 3 effect inventory already names them. Two accepted mechanisms:
 

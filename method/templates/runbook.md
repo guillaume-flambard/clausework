@@ -77,7 +77,7 @@ Turning silence into a real error is what makes the alerting chain work at all.
 
 ## Escalation path
 
-(Name the person or team who receives page-outs at 3am. Example: "oncall-engineers@company.slack.com", or "Sarah Martinez, Primary On-Call".)
+(Name the person or team who receives page-outs at 3am. Example: "oncall-engineers@company.slack.com", or "Sarah Martinez, Primary On-Call". If the on-call engineer differs from the business owner in contract 1, note both names here; otherwise use the owner name from contract 1.)
 
 ## Log format
 

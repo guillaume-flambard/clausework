@@ -84,6 +84,10 @@ Always use the Production URL for live automation requests.
    - request.md file is created in the GitHub repository
    - Completion message is displayed
 
+## Testing the gates
+
+Run `node intake/test-gates.mjs` from the repository root to verify that the five rules correctly refuse bad requests and pass valid ones. No n8n instance is required.
+
 ## Validation Rules
 
 The five rules are applied live during form submission. Each rule catches the obvious refusals and passes fields to the scoping conversation:
