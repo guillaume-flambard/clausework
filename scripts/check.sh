@@ -47,6 +47,26 @@ else
   bad "testing: method/testing.md missing"
 fi
 
+# 2c. Case files carry both worked examples per rule, as soon as they exist.
+# Independent of gates.md, so a heading-format drift fails in the task that
+# introduces it rather than four tasks later.
+check_cases() {
+  local file="$1"; shift
+  [ -f "$file" ] || return 0
+  local r miss=0
+  for r in "$@"; do
+    [ "$(grep -c "^### $r passes$" "$file")" -eq 1 ] \
+      || { bad "cases: $file needs exactly one '### $r passes'"; miss=1; }
+    [ "$(grep -c "^### $r refuses$" "$file")" -eq 1 ] \
+      || { bad "cases: $file needs exactly one '### $r refuses'"; miss=1; }
+  done
+  [ "$miss" -eq 0 ] && ok "cases: $file headings well formed"
+}
+check_cases method/cases/request-cases.md R1 R2 R3 R4 R5
+check_cases method/cases/trigger-cases.md T1 T2 T3 T4
+check_cases method/cases/idempotency-cases.md I1 I2 I3 I4 I5
+check_cases method/cases/impact-cases.md M1 M2 M3 M4 M5
+
 # 3. Every refusal rule declared in gates.md has both examples in its cases file.
 if [ -f method/gates.md ]; then
   rules=$(grep -oE '^\| (R[1-5]|T[1-4]|I[1-5]|M[1-5]) ' method/gates.md | tr -d '| ' | sort -u)
