@@ -271,7 +271,7 @@ git commit -m "feat: contract 1, the request, with R1 to R5 and their case pairs
 
 **Interfaces:**
 - Consumes: `scripts/check.sh`.
-- Produces: rule identifiers `T1` to `T4`. Field names used by tasks 6, 7 and 9: `trigger_type`, `system_of_record`, `volume_normal`, `volume_peak`, `peak_cause`, `latency`, `replay_behaviour`, `catch_up_window`, `order_matters`. `replay_behaviour` and `volume_peak` are consumed directly by the test table in task 6, so their names must not drift.
+- Produces: rule identifiers `T1` to `T4`. Field names used by tasks 6, 7 and 9: `trigger_type`, `system_of_record`, `volume_normal`, `volume_peak`, `peak_cause`, `latency`, `replay_behaviour`, `catch_up_window`, `order_matters`, and `cursor_field` (conditional, required for polling triggers only). `replay_behaviour` and `volume_peak` are consumed directly by the test table in task 6, so their names must not drift.
 
 - [ ] **Step 1: Write the failing test**
 

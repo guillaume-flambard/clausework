@@ -22,6 +22,8 @@ Filled by the builder, in conversation with the requester. This contract defines
 
 **order_matters:** Whether events must be processed in a specific sequence. If yes, state the order (e.g. "by CreatedDate ascending", "by event timestamp"). If no, state that. Order affects which node the cursor lives on and whether parallel processing is safe.
 
+**cursor_field:** (Conditional, required for polling triggers only.) The field or timestamp the polling trigger uses to track progress between runs, so each execution knows where it stopped and avoids duplicates or gaps. Example: "CreatedDate" or "UpdatedTimestamp" or "LastModified". Omit this field entirely for webhook, schedule, and app event triggers. Rule T4 refuses a polling trigger that leaves this empty: without a named cursor, the polling job cannot know where it stopped on the last run, guaranteeing either reprocessing of old events (duplicates) or skipping events created during the run (gaps).
+
 When replay_behaviour or volume_peak are left thin, contract 3 will be under-specified and test coverage for the two mandatory cases (Replay, Peak) will suffer. State those two field names explicitly when filling them: the precision you put in now determines what tests can prove later.
 
 ## Refusal rules
